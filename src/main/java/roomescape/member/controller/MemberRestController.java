@@ -1,9 +1,12 @@
 package roomescape.member.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.dto.ApiResponse;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberCreateRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
@@ -21,5 +24,12 @@ public class MemberRestController {
     public ApiResponse<MemberResponse> createMember(@RequestBody MemberCreateRequest request) {
         MemberResponse memberResponse = memberService.createMember(request);
         return new ApiResponse<>(memberResponse);
+    }
+
+    @PostMapping("/login")
+    public ApiResponse<Void> login(@RequestBody LoginRequest request, HttpSession session) {
+        Member member = memberService.login(request);
+        session.setAttribute("loginMember", member);
+        return new ApiResponse<>(null);
     }
 }

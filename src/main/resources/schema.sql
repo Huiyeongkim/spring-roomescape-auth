@@ -1,7 +1,9 @@
 CREATE TABLE member
 (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
-    name       VARCHAR(255) NOT NULL,
+    login_id    VARCHAR(50)  NOT NULL UNIQUE,
+    password   VARCHAR(50)  NOT NULL,
+    name       VARCHAR(255) NOT NULL UNIQUE,
     role       VARCHAR(50)  NOT NULL,
     created_at TIMESTAMP    NOT NULL DEFAULT current_timestamp,
     updated_at TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,

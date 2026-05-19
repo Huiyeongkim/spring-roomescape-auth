@@ -24,6 +24,8 @@ public class MemberQueryingDao {
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> {
         Member member = new Member(
                 resultSet.getLong("id"),
+                resultSet.getString("loginId"),
+                resultSet.getString("password"),
                 resultSet.getString("name"),
                 MemberRole.valueOf(resultSet.getString("role"))
         );
@@ -47,6 +49,23 @@ public class MemberQueryingDao {
         }
     }
 
+    public Optional<Member> findByLoginId(String loginId) {
+        String sql = """
+                SELECT id, login_id, password name, role FROM member
+                WHERE login_id = :login_id;
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("login_id", loginId);
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, param, memberRowMapper);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public boolean existsByName(String name) {
         String sql = """
                 SELECT count(1) FROM member
@@ -54,6 +73,18 @@ public class MemberQueryingDao {
                 """;
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", name);
+
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByLoginId(String loginId) {
+        String sql = """
+                SELECT count(1) FROM member
+                WHERE login_id = :login_id;
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("login_id", loginId);
 
         Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
         return count != null && count > 0;

@@ -1,19 +1,14 @@
 package roomescape.member.dto;
 
-public class MemberCreateRequest {
+public class LoginRequest {
 
     private final String loginId;
-    private final String password;
-    private final String name;
 
-    public MemberCreateRequest(String loginId, String password, String name) {
+    private final String password;
+
+    public LoginRequest(String loginId, String password) {
         this.loginId = loginId;
         this.password = password;
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getLoginId() {

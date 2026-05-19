@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.MemberRole;
+import roomescape.member.dto.MemberCreateRequest;
 
 import javax.sql.DataSource;
 
@@ -18,14 +19,17 @@ public class MemberUpdatingDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public Long save(String name) {
+    public Long save(MemberCreateRequest request) {
         String sql = """
-                INSERT INTO member(name, role) VALUES (:name, :role);
+                INSERT INTO member(login_id, password, name, role) 
+                VALUES (:login_id, :password, :name, :role);
                 """;
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", name)
+                .addValue("login_id", request.getLoginId())
+                .addValue("password", request.getPassword())
+                .addValue("name", request.getName())
                 .addValue("role", MemberRole.USER.name());
 
         jdbcTemplate.update(sql, param, keyHolder, new String[]{"id"});

@@ -14,6 +14,7 @@ import roomescape.member.service.MemberService;
 @RestController
 public class MemberRestController {
 
+    private static final String LOGIN_MEMBER_ID = "loginMemberId";
     private final MemberService memberService;
 
     public MemberRestController(MemberService memberService) {
@@ -29,7 +30,7 @@ public class MemberRestController {
     @PostMapping("/login")
     public ApiResponse<Void> login(@RequestBody LoginRequest request, HttpSession session) {
         Member member = memberService.login(request);
-        session.setAttribute("loginMember", member);
+        session.setAttribute(LOGIN_MEMBER_ID, member.getId());
         return new ApiResponse<>(null);
     }
 }

@@ -1,9 +1,9 @@
 CREATE TABLE member
 (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
-    login_id    VARCHAR(50)  NOT NULL UNIQUE,
+    login_id   VARCHAR(50)  NOT NULL UNIQUE,
     password   VARCHAR(50)  NOT NULL,
-    name       VARCHAR(255) NOT NULL UNIQUE,
+    name       VARCHAR(255) NOT NULL,
     role       VARCHAR(50)  NOT NULL,
     created_at TIMESTAMP    NOT NULL DEFAULT current_timestamp,
     updated_at TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
@@ -33,13 +33,14 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
-    name       VARCHAR(255) NOT NULL,
     date       DATE         NOT NULL,
+    member_id  BIGINT       NOT NULL,
     time_id    BIGINT       NOT NULL,
     theme_id   BIGINT       NOT NULL,
     created_at TIMESTAMP    NOT NULL DEFAULT current_timestamp,
     updated_at TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     CONSTRAINT uk_reservation_theme_date_time UNIQUE (date, theme_id, time_id)

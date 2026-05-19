@@ -66,18 +66,6 @@ public class MemberQueryingDao {
         }
     }
 
-    public boolean existsByName(String name) {
-        String sql = """
-                SELECT count(1) FROM member
-                WHERE name = :name;
-                """;
-        SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", name);
-
-        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
-        return count != null && count > 0;
-    }
-
     public boolean existsByLoginId(String loginId) {
         String sql = """
                 SELECT count(1) FROM member

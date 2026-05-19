@@ -48,7 +48,7 @@ public class ReservationService {
 
         Long generatedId;
         try {
-            generatedId = reservationUpdatingDao.save(reservationReq);
+            generatedId = reservationUpdatingDao.save(reservationReq, 1L /*추후*/);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }

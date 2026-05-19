@@ -18,12 +18,12 @@ public class ReservationUpdatingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(ReservationCreateRequest reservationReq) {
-        String sql = "insert into reservation(name, date, time_id, theme_id) values(:name, :date, :time_id, :theme_id)";
+    public Long save(ReservationCreateRequest reservationReq, Long memberId) {
+        String sql = "insert into reservation(date, member_id, time_id, theme_id) values(:date, :member_id, :time_id, :theme_id)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", reservationReq.getName())
                 .addValue("date", reservationReq.getDate())
+                .addValue("member_id", memberId)
                 .addValue("time_id", reservationReq.getTimeId())
                 .addValue("theme_id", reservationReq.getThemeId());
 
@@ -32,9 +32,8 @@ public class ReservationUpdatingDao {
     }
 
     public void update(Long id, ReservationUpdateRequest reservationReq) {
-        String sql = "update reservation SET name = :name, date = :date, time_id = :time_id, theme_id = :theme_id where id = :id";
+        String sql = "update reservation SET date = :date, time_id = :time_id, theme_id = :theme_id where id = :id";
         SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", reservationReq.getName())
                 .addValue("date", reservationReq.getDate())
                 .addValue("time_id", reservationReq.getTimeId())
                 .addValue("theme_id", reservationReq.getThemeId())

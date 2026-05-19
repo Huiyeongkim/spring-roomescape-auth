@@ -46,8 +46,6 @@ class MemberServiceTest {
 
         when(memberQueryingDao.existsByLoginId(request.getLoginId()))
                 .thenReturn(false);
-        when(memberQueryingDao.existsByName(request.getName()))
-                .thenReturn(false);
 
         when(memberQueryingDao.findById(anyLong()))
                 .thenReturn(Optional.of(member));
@@ -71,25 +69,6 @@ class MemberServiceTest {
         MemberCreateRequest request = new MemberCreateRequest(loginId, password, name);
 
         when(memberQueryingDao.existsByLoginId(request.getLoginId()))
-                .thenReturn(true);
-
-        // when && then
-        Assertions.assertThrows(BusinessException.class, () -> memberService.createMember(request));
-    }
-
-    @Test
-    @DisplayName("멤버를 생성할 때 이미 이름이 있으면 에러를 반환한다.")
-    void 멤버_생성_에러_이름_있음() {
-        // given
-        String loginId = "1234ll";
-        String password = "12sdf";
-        String name = "브라운";
-
-        MemberCreateRequest request = new MemberCreateRequest(loginId, password, name);
-
-        when(memberQueryingDao.existsByLoginId(request.getLoginId()))
-                .thenReturn(false);
-        when(memberQueryingDao.existsByName(request.getName()))
                 .thenReturn(true);
 
         // when && then

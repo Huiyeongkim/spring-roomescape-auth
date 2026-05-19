@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -26,6 +28,14 @@ public class ReservationQueryingDao {
     }
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        Member member = new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_login_id"),
+                resultSet.getString("member_password"),
+                resultSet.getString("member_name"),
+                MemberRole.valueOf(resultSet.getString("member_role"))
+        );
+
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
                 resultSet.getObject("start_at", LocalTime.class)
@@ -40,8 +50,8 @@ public class ReservationQueryingDao {
 
         return new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("reservation_name"),
                 resultSet.getObject("reservation_date", LocalDate.class),
+                member,
                 reservationTime,
                 theme,
                 resultSet.getObject("reservation_created_at", LocalDateTime.class),
@@ -52,19 +62,28 @@ public class ReservationQueryingDao {
     public Optional<Reservation> findReservationById(long id) {
         String sql = """
                 select r.id as reservation_id, 
-                       r.name as reservation_name, 
                        r.date as reservation_date, 
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
+                       
                        t.start_at, 
+                       
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
-                       th.url as theme_url
+                       th.url as theme_url,
+                       
+                       m.id as member_id,
+                       m.login_id as member_login_id,
+                       m.password as member_password,
+                       m.name as member_name,
+                       m.role as member_role
+
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
+                inner join member as m on m.id = r.member_id
                 where r.id = :id
                 """;
         try {
@@ -79,20 +98,29 @@ public class ReservationQueryingDao {
 
     public List<Reservation> findAllReservations() {
         String sql = """
-                 select r.id as reservation_id, 
-                       r.name as reservation_name, 
+                select r.id as reservation_id, 
                        r.date as reservation_date, 
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
+                       
                        t.start_at, 
+                       
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
-                       th.url as theme_url
+                       th.url as theme_url,
+                       
+                       m.id as member_id,
+                       m.login_id as member_login_id,
+                       m.password as member_password,
+                       m.name as member_name,
+                       m.role as member_role
+                                       
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
+                inner join member as m on m.id = r.member_id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
@@ -100,20 +128,29 @@ public class ReservationQueryingDao {
     public List<Reservation> findMyReservations(String name) {
         String sql = """
                  select r.id as reservation_id, 
-                       r.name as reservation_name, 
                        r.date as reservation_date, 
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
+                       
                        t.start_at, 
+                       
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
-                       th.url as theme_url
+                       th.url as theme_url,
+                       
+                       m.id as member_id,
+                       m.login_id as member_login_id,
+                       m.password as member_password,
+                       m.name as member_name,
+                       m.role as member_role
+                                       
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
-                where r.name = :name
+                inner join member as m on m.id = r.member_id
+                where m.name = :name
                 """;
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", name);
@@ -122,20 +159,29 @@ public class ReservationQueryingDao {
 
     public Optional<Reservation> findReservationByThemeAndDateAndTime(Long themeId, LocalDate date, Long timeId) {
         String sql = """
-                 select r.id as reservation_id, 
-                       r.name as reservation_name, 
+                     select r.id as reservation_id, 
                        r.date as reservation_date, 
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
+                       
                        t.start_at, 
+                       
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
-                       th.url as theme_url
+                       th.url as theme_url,
+                       
+                       m.id as member_id,
+                       m.login_id as member_login_id,
+                       m.password as member_password,
+                       m.name as member_name,
+                       m.role as member_role
+                                       
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
+                inner join member as m on m.id = r.member_id
                 where r.theme_id = :theme_id and r.date = :date and r.time_id = :time_id
                 """;
         try {

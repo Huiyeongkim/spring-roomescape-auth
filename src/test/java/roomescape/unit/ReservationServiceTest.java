@@ -79,7 +79,7 @@ class ReservationServiceTest {
         when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
                 .thenReturn(Optional.empty());
 
-        when(reservationUpdatingDao.save(any()))
+        when(reservationUpdatingDao.save(any(), ))
                 .thenReturn(reservationId);
 
         when(reservationQueryingDao.findReservationById(reservationId))
@@ -108,7 +108,7 @@ class ReservationServiceTest {
         when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
                 .thenReturn(Optional.empty());
 
-        when(reservationUpdatingDao.save(any()))
+        when(reservationUpdatingDao.save(any(), ))
                 .thenReturn(reservationId);
 
         // when && then
@@ -184,7 +184,7 @@ class ReservationServiceTest {
         // when & then
         Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
-        verify(reservationUpdatingDao, never()).save(any());
+        verify(reservationUpdatingDao, never()).save(any(), );
     }
 
     @Test

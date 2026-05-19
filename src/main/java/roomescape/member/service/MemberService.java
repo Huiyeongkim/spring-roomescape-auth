@@ -26,10 +26,6 @@ public class MemberService {
             throw new BusinessException(ErrorCode.MEMBER_ALREADY_EXISTS);
         }
 
-        if (memberQueryingDao.existsByName(request.getName())) {
-            throw new BusinessException(ErrorCode.MEMBER_ALREADY_EXISTS);
-        }
-
         Long savedMemberId = memberUpdatingDao.save(request);
         Member findMember = memberQueryingDao.findById(savedMemberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));

@@ -3,6 +3,7 @@ INSERT INTO reservation_time (start_at) VALUES ('11:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');
 INSERT INTO reservation_time (start_at) VALUES ('13:00');
 
+
 INSERT INTO theme (name, description, url)
 VALUES ('인형의 집', '공포 테마의 클래식, 밤마다 살아 움직이는 인형들이 가득한 저택을 탈출하세요.', 'https://example.com/1');
 
@@ -19,20 +20,30 @@ INSERT INTO theme (name, description, url)
 VALUES ('꿈속의 과자집', '꿈속에서 길을 잃은 당신, 달콤하지만 위험한 과자집의 비밀을 풀어야 합니다.', 'https://example.com/5');
 
 
-INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('브라운', '2026-05-01', 1, 1);
+INSERT INTO member(login_id, password, name, role)
+VALUES ('id1', 'pass1', '브라운', 'USER');
 
-INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('네오', '2026-05-01', 2, 3);
+INSERT INTO member(login_id, password, name, role)
+VALUES ('id2', 'pass2', '류시', 'USER');
 
-INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('제이슨', '2026-05-04', 3, 2);
+INSERT INTO member(login_id, password, name, role)
+VALUES ('id3', 'pass3', '검프', 'USER');
 
-INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('제이슨', '2026-05-03', 5, 2);
 
-INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('워니', '2026-05-05', 3, 4);
+INSERT INTO reservation (date, member_id, theme_id, time_id)
+VALUES ( '2026-05-01',1, 1, 1);
 
-INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('포비', '2026-05-04', 5, 1);
+INSERT INTO reservation (date, member_id, theme_id, time_id)
+VALUES ('2026-05-01', 2, 2, 3);
+
+INSERT INTO reservation (date, member_id, theme_id, time_id)
+VALUES ('2026-05-04', 3,3, 2);
+
+INSERT INTO reservation (date, member_id, theme_id, time_id)
+VALUES ('2026-05-03', 1, 5, 2);
+
+INSERT INTO reservation (date, member_id, theme_id, time_id)
+VALUES ('2026-05-05', 2, 3, 4);
+
+INSERT INTO reservation (date, member_id, theme_id, time_id)
+VALUES ('2026-05-04', 3, 5, 1);

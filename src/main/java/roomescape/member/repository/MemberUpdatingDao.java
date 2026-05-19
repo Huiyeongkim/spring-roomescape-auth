@@ -1,4 +1,4 @@
-package roomescape.user.repository;
+package roomescape.member.repository;
 
 import org.springframework.stereotype.Repository;
 

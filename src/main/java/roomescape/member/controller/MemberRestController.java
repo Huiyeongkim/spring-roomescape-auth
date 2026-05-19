@@ -1,12 +1,12 @@
-package roomescape.user.controller;
+package roomescape.member.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.dto.ApiResponse;
-import roomescape.user.dto.MemberCreateRequest;
-import roomescape.user.dto.MemberResponse;
-import roomescape.user.service.MemberService;
+import roomescape.member.dto.MemberCreateRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @RestController
 public class MemberRestController {

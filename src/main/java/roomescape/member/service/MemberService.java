@@ -1,8 +1,8 @@
-package roomescape.user.service;
+package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.user.dto.MemberResponse;
-import roomescape.user.dto.MemberCreateRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.dto.MemberCreateRequest;
 
 @Service
 public class MemberService {

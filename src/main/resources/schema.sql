@@ -1,3 +1,13 @@
+CREATE TABLE user
+(
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    name       VARCHAR(255) NOT NULL,
+    role       VARCHAR(50)  NOT NULL,
+    created_at TIMESTAMP    NOT NULL DEFAULT current_timestamp,
+    updated_at TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation_time
 (
     id         BIGINT    NOT NULL AUTO_INCREMENT,

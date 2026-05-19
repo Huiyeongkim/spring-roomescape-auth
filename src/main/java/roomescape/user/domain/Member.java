@@ -1,12 +1,12 @@
 package roomescape.user.domain;
 
-public class User {
+public class Member {
 
     private final Long id;
     private final String name;
-    private final UserRole role;
+    private final MemberRole role;
 
-    public User(Long id, String name, UserRole role) {
+    public Member(Long id, String name, MemberRole role) {
         this.id = id;
         this.name = name;
         this.role = role;

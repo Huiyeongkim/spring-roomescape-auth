@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -47,6 +49,11 @@ class ReservationServiceTest {
     @InjectMocks
     ReservationService reservationService;
 
+    Long memberId = 1L;
+    String loginId = "abc";
+    String password = "def";
+    String name = "브라운";
+    Member member = new Member(memberId, loginId, password, name, MemberRole.USER);
 
     Long reservationTimeId = 1L;
     LocalTime startAt = LocalTime.of(10, 0);
@@ -59,16 +66,15 @@ class ReservationServiceTest {
     Theme theme = new Theme(themeId, themeName, description, url);
 
     Long reservationId = 1L;
-    String name = "브라운";
     LocalDate date = LocalDate.now().plusDays(3);
 
-    Reservation reservation = new Reservation(reservationId, name, date, reservationTime, theme, LocalDateTime.now(), LocalDateTime.now());
+    Reservation reservation = new Reservation(reservationId, date, member, reservationTime, theme, LocalDateTime.now(), LocalDateTime.now());
 
     @Test
     @DisplayName("예약을 생성할 수 있다.")
     void 예약_생성_성공() {
         // given
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -79,7 +85,7 @@ class ReservationServiceTest {
         when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
                 .thenReturn(Optional.empty());
 
-        when(reservationUpdatingDao.save(any(), ))
+        when(reservationUpdatingDao.save(any(), anyLong()))
                 .thenReturn(reservationId);
 
         when(reservationQueryingDao.findReservationById(reservationId))
@@ -90,36 +96,13 @@ class ReservationServiceTest {
 
         // then
         Assertions.assertEquals(request.getDate(), reservationResponse.getDate());
-        Assertions.assertEquals(request.getName(), reservationResponse.getName());
-    }
-
-    @Test
-    @DisplayName("예약을 생성할 때 이름에 특수문자가 포함된 경우 에러가 발생한다.")
-    void 예약_생성_에러_이름_특수문자() {
-        // given
-        ReservationCreateRequest request = new ReservationCreateRequest("브라운!", date, reservationTimeId, themeId);
-
-        when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
-                .thenReturn(Optional.of(reservationTime));
-
-        when(themeQueryingDao.findThemeById(anyLong()))
-                .thenReturn(Optional.of(theme));
-
-        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
-                .thenReturn(Optional.empty());
-
-        when(reservationUpdatingDao.save(any(), ))
-                .thenReturn(reservationId);
-
-        // when && then
-        Assertions.assertThrows(BusinessException.class, () -> reservationService.create(request));
     }
 
     @Test
     @DisplayName("예약을 생성할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
     void 예약_생성_에러_예약시간_없음() {
         // given
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.empty());
@@ -134,7 +117,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성할 때 존재하지 않는 테마인 경우 에러가 발생한다.")
     void 예약_생성_에러_테마_없음() {
         // given
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -152,7 +135,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성할 때 현재보다 이전의 날짜인 경우 에러가 발생한다.")
     void 예약_생성_에러_과거_날짜_예약() {
         // given
-        ReservationCreateRequest request = new ReservationCreateRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(LocalDate.now().minusDays(3), reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -170,7 +153,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성할 때 이미 예약된 시간인 경우 에러가 발생한다.")
     void 예약_생성_에러_이미_예약() {
         // given
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -184,7 +167,7 @@ class ReservationServiceTest {
         // when & then
         Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
-        verify(reservationUpdatingDao, never()).save(any(), );
+        verify(reservationUpdatingDao, never()).save(any(), anyLong());
     }
 
     @Test
@@ -195,10 +178,9 @@ class ReservationServiceTest {
         LocalTime startAt2 = LocalTime.of(10, 0);
         ReservationTime reservationTime2 = new ReservationTime(reservationTimeId2, startAt2);
 
-        String name2 = "브라운";
         LocalDate date2 = LocalDate.now();
 
-        ReservationCreateRequest request = new ReservationCreateRequest(name2, date2, reservationTimeId2, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(date2, reservationTimeId2, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime2));
@@ -219,10 +201,9 @@ class ReservationServiceTest {
         LocalTime startAt2 = LocalTime.now();
         ReservationTime reservationTime2 = new ReservationTime(reservationTimeId2, startAt2);
 
-        String name2 = "브라운";
         LocalDate date2 = LocalDate.now();
 
-        ReservationCreateRequest request = new ReservationCreateRequest(name2, date2, reservationTimeId2, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(date2, reservationTimeId2, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime2));
@@ -247,7 +228,6 @@ class ReservationServiceTest {
 
         // then
         Assertions.assertEquals(reservationId, response.getId());
-        Assertions.assertEquals(name, response.getName());
         Assertions.assertEquals(date, response.getDate());
     }
 
@@ -267,10 +247,9 @@ class ReservationServiceTest {
     void 예약_목록_조회_성공() {
         // given
         Long reservationId2 = 2L;
-        String name2 = "검프";
         LocalDate date2 = LocalDate.now().plusDays(5);
 
-        Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime, theme, LocalDateTime.now(), LocalDateTime.now());
+        Reservation reservation2 = new Reservation(reservationId2, date2, member, reservationTime, theme, LocalDateTime.now(), LocalDateTime.now());
 
         when(reservationQueryingDao.findAllReservations())
                 .thenReturn(List.of(reservation, reservation2));
@@ -282,11 +261,9 @@ class ReservationServiceTest {
         Assertions.assertEquals(2, responses.size());
 
         Assertions.assertEquals(reservationId, responses.getFirst().getId());
-        Assertions.assertEquals(name, responses.getFirst().getName());
         Assertions.assertEquals(date, responses.getFirst().getDate());
 
         Assertions.assertEquals(reservationId2, responses.get(1).getId());
-        Assertions.assertEquals(name2, responses.get(1).getName());
         Assertions.assertEquals(date2, responses.get(1).getDate());
     }
 
@@ -294,7 +271,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 수 있다.")
     void 예약_수정_성공() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(date, reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
@@ -316,36 +293,13 @@ class ReservationServiceTest {
 
         // then
         Assertions.assertEquals(updateRequest.getDate(), reservationResponse.getDate());
-        Assertions.assertEquals(updateRequest.getName(), reservationResponse.getName());
     }
 
-    @Test
-    @DisplayName("예약을 수정할 때 이름에 특수문자가 포함된 경우 에러가 발생한다.")
-    void 예약_수정_에러_이름_특수문자() {
-        // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest("은오!", date, reservationTimeId, themeId);
-
-        when(reservationQueryingDao.existsById(reservationId))
-                .thenReturn(true);
-
-        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
-                .thenReturn(Optional.of(reservationTime));
-
-        when(themeQueryingDao.findThemeById(themeId))
-                .thenReturn(Optional.of(theme));
-
-        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
-                .thenReturn(Optional.empty());
-
-        // when && then
-        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
-    }
-
-    @Test
+@Test
     @DisplayName("예약을 수정할 때 현재보다 이전의 날짜인 경우 에러가 발생한다.")
     void 예약_수정_에러_과거_날짜_예약() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().minusDays(3), reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
@@ -363,7 +317,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 때 존재하지 않는 예약인 경우 에러가 발생한다.")
     void 예약_수정_에러_예약_없음() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(date, reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(anyLong()))
                 .thenReturn(false);
@@ -378,7 +332,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
     void 예약_수정_에러_예약시간_없음() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(date, reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
@@ -395,7 +349,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 때 존재하지 않는 테마인 경우 에러가 발생한다.")
     void 예약_수정_에러_테마_없음() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(date, reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
@@ -415,7 +369,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 때 이미 예약된 시간인 경우 에러가 발생한다.")
     void 예약_수정_에러_중복_데이터() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(date, reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
@@ -438,7 +392,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 때 수정 후 조회되지 않는 경우 에러가 발생한다.")
     void 예약_수정_에러_수정_후_예약_없음() {
         // given
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(date, reservationTimeId, themeId);
 
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
@@ -465,7 +419,7 @@ class ReservationServiceTest {
         // given
         LocalTime startAt2 = LocalTime.of(9, 10);
         ReservationTime reservationTime2 = new ReservationTime(2L, startAt2);
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, LocalDate.now(), reservationTime2.getId(), themeId);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now(), reservationTime2.getId(), themeId);
 
         when(reservationQueryingDao.existsById(anyLong()))
                 .thenReturn(true);

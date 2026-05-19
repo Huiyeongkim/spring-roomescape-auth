@@ -64,7 +64,6 @@ class MissionStep3Test {
                 .statusCode(200);
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2026-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
@@ -83,7 +82,6 @@ class MissionStep3Test {
                 .body("data.size()", is(1));
 
         Map<String, Object> updatedReservation = new HashMap<>();
-        updatedReservation.put("name", "주니");
         updatedReservation.put("date", "2026-08-06");
         updatedReservation.put("timeId", 1);
         updatedReservation.put("themeId", 1);

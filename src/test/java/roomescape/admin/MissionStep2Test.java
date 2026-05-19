@@ -39,7 +39,8 @@ class MissionStep2Test {
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO theme (name,  description, url) VALUES (?, ?, ?)", "무서워", "akdk", "https://hello.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES (?, ?, ?, ?)", "id1", "pass1", "브라운", "USER");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, ?, ?, ?)", "2023-08-05", 1, 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -54,10 +55,12 @@ class MissionStep2Test {
 
     @Test
     void DB_추가_삭제_API_전환() {
+
+        jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES (?, ?, ?, ?)", "id1", "pass1", "브라운", "USER");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES (?, ?, ?)", "무서워", "akdk", "https://hello.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2026-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);

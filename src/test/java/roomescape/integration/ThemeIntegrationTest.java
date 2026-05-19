@@ -115,9 +115,10 @@ class ThemeIntegrationTest {
     @Test
     @DisplayName("예약이 있는 테마인 경우 삭제할 수 없다.")
     void 테마_삭제_실패_예약이_있는_테마() {
+        jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES ('id1', 'pass1', '브라운', 'USER')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('무서운 이야기', '공포', 'http://example.com')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-08-04', 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
 
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
@@ -134,6 +135,7 @@ class ThemeIntegrationTest {
 
         @BeforeEach
         void setUp() {
+            jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES ('id1', 'pass1', '브라운', 'USER')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:00')");
@@ -151,12 +153,12 @@ class ThemeIntegrationTest {
         void 인기_테마_조회_예약_수_내림차순() {
             LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 1, 1)", now.minusDays(9));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 3)", now.minusDays(10));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 2)", now.minusDays(11));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(6));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 4)", now.minusDays(5));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 1)", now.minusDays(4));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -171,12 +173,12 @@ class ThemeIntegrationTest {
         void 인기_테마_조회_예약_수_동일시_id_오름차순() {
             LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(3));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 1, 1)", now.minusDays(9));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 3)", now.minusDays(10));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(3));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(6));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 4)", now.minusDays(5));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 1)", now.minusDays(4));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -191,12 +193,12 @@ class ThemeIntegrationTest {
         void 인기_테마_조회_범위_밖_예약_제외() {
             LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 1, 1)", now.minusDays(9));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 3)", now.minusDays(10));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 2)", now.minusDays(11));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(6));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 4)", now.minusDays(5));
+            jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 1)", now.minusDays(4));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)

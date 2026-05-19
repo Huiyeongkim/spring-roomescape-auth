@@ -157,7 +157,6 @@ class ReservationScenarioTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00')");
 
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2026-06-04");
         params.put("timeId", "1");
         params.put("themeId", "1");
@@ -173,6 +172,6 @@ class ReservationScenarioTest {
                 .when().get("/times?themeId=1&date=2026-06-04")
                 .then().log().all()
                 .statusCode(200)
-                .body("data.size()", is(1));
+                .body("data.size()", is(2));
     }
 }

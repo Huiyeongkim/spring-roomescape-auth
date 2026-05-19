@@ -24,6 +24,7 @@ class ReservationIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES ('id1', 'pass1', '브라운', 'USER')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('무서운 이야기', '공포', 'http://example.com')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00')");
@@ -32,11 +33,10 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("예약을 생성할 수 있다.")
     void 예약_생성_성공() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-04");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -44,7 +44,6 @@ class ReservationIntegrationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("data.name", is("브라운"))
                 .body("data.date", is("2026-08-04"));
     }
 
@@ -61,8 +60,8 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("전체 예약 목록을 조회할 수 있다.")
     void 예약_전체_목록_조회() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-08-04', 1, 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('은오', '2026-08-05', 1, 2)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-05', 1, 1, 2)");
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -74,13 +73,12 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("예약을 수정할 수 있다.")
     void 예약_수정_성공() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-08-04', 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "은오");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-08");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -88,18 +86,16 @@ class ReservationIntegrationTest {
                 .when().put("/reservations/1")
                 .then().log().all()
                 .statusCode(200)
-                .body("data.name", is("은오"))
                 .body("data.date", is("2026-08-08"));
     }
 
     @Test
     @DisplayName("예약을 삭제할 수 있다.")
     void 예약_삭제_성공() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-04");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -137,11 +133,10 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("중복된 날짜, 시간, 테마인 경우 예약할 수 없다.")
     void 예약_생성_실패_중복_예약() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-04");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -160,29 +155,12 @@ class ReservationIntegrationTest {
     }
 
     @Test
-    @DisplayName("이름이 없는 경우 예약할 수 없다.")
-    void 예약_생성_실패_이름_없음() {
-        Map<String, String> params = new HashMap<>();
-        params.put("date", "2026-08-04");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @Test
     @DisplayName("과거 날짜인 경우 예약할 수 없다.")
     void 예약_생성_실패_과거_날짜() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2020-01-01");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -196,11 +174,10 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("존재하지 않는 예약 시간인 경우 예약할 수 없다.")
     void 예약_생성_실패_존재하지_않는_시간() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-04");
-        params.put("timeId", "999");
-        params.put("themeId", "1");
+        params.put("timeId", 999);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -214,11 +191,10 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("존재하지 않는 테마인 경우 예약할 수 없다.")
     void 예약_생성_실패_존재하지_않는_테마() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-04");
-        params.put("timeId", "1");
-        params.put("themeId", "999");
+        params.put("timeId", 1);
+        params.put("themeId", 999);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

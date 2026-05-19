@@ -1,16 +1,10 @@
 package roomescape.reservation.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public class ReservationCreateRequest {
-
-    @Size(max = 255, message = "이름은 255자 이하여야 합니다.")
-    @NotBlank(message = "이름은 필수입니다.")
-    private final String name;
 
     @NotNull(message = "예약 날짜는 필수입니다.")
     private final LocalDate date;
@@ -21,15 +15,10 @@ public class ReservationCreateRequest {
     @NotNull(message = "테마는 필수입니다.")
     private final Long themeId;
 
-    public ReservationCreateRequest(String name, LocalDate date, Long timeId, Long themeId) {
-        this.name = name;
+    public ReservationCreateRequest(LocalDate date, Long timeId, Long themeId) {
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {

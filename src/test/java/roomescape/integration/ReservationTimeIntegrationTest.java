@@ -147,9 +147,10 @@ class ReservationTimeIntegrationTest {
     @Test
     @DisplayName("예약이 있는 시간인 경우 삭제할 수 없다.")
     void 예약_시간_삭제_실패_예약이_있는_시간() {
+        jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES ('id1', 'pass1', '브라운', 'USER')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('무서운 이야기', '공포', 'http://example.com')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-08-04', 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
 
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")

@@ -11,4 +11,16 @@ public class Member {
         this.name = name;
         this.role = role;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public MemberRole getRole() {
+        return role;
+    }
 }

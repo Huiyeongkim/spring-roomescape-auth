@@ -11,10 +11,12 @@ public enum ErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
     RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 멤버입니다."),
 
     // 409
     RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 예약된 시간입니다."),
     RESERVATION_TIME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 예약 시간입니다."),
+    MEMBER_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 이름입니다."),
 
     // 422
     RESERVATION_DATE_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "현재보다 이전의 날짜는 예약할 수 없습니다."),

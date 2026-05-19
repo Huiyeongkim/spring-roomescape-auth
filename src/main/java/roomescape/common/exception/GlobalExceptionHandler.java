@@ -47,6 +47,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception e) {
         return ResponseEntity.internalServerError()
-                .body(new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."));
+                .body(new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "서버 오류가 발생했습니다."));
     }
 }

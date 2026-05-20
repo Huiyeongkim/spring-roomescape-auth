@@ -2,7 +2,9 @@ package roomescape.theme.controller.api;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.auth.LoginMember;
 import roomescape.common.dto.ApiResponse;
+import roomescape.member.domain.Member;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -20,7 +22,7 @@ public class AdminThemeRestController {
     }
 
     @PostMapping
-    public ApiResponse<ThemeResponse> create(@Valid @RequestBody ThemeCreateRequest themeRequest) {
+    public ApiResponse<ThemeResponse> create(@Valid @RequestBody ThemeCreateRequest themeRequest, @LoginMember Member member) {
         return new ApiResponse<>(themeService.create(themeRequest));
     }
 
@@ -29,16 +31,8 @@ public class AdminThemeRestController {
         return new ApiResponse<>(themeService.findAll());
     }
 
-    @GetMapping("/popular")
-    public ApiResponse<List<ThemeResponse>> readPopularTheme(
-            @RequestParam(defaultValue = "7") Integer period,
-            @RequestParam(defaultValue = "10") Integer limit
-    ) {
-        return new ApiResponse<>(themeService.findPopularTheme(period, limit));
-    }
-
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id, @LoginMember Member member) {
         themeService.delete(id);
         return new ApiResponse<>(null);
     }

@@ -25,7 +25,9 @@ public class AuthenticationPrincipalConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginCheckInterceptor)
                 .addPathPatterns(
                         "/reservations/**",
-                        "/admin/**"
+                        "/admin/times/**",
+                        "/admin/themes/**",
+                        "/admin/reservations/**"
                 )
                 .excludePathPatterns(
                         "/login",

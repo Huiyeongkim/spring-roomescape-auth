@@ -2,7 +2,9 @@ package roomescape.reservationtime.controller.api;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.auth.LoginMember;
 import roomescape.common.dto.ApiResponse;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeUpdateRequest;
@@ -22,25 +24,26 @@ public class AdminReservationTimeRestController {
     }
 
     @PostMapping
-    public ApiResponse<ReservationTimeResponse> create(@Valid @RequestBody ReservationTimeCreateRequest reservationTimeReq) {
+    public ApiResponse<ReservationTimeResponse> create(@Valid @RequestBody ReservationTimeCreateRequest reservationTimeReq, @LoginMember Member member) {
         return new ApiResponse<>(reservationTimeService.create(reservationTimeReq));
     }
 
     @GetMapping
     public ApiResponse<List<ReservationTimeResponse>> read(
             @RequestParam(required = false) LocalDate date,
-            @RequestParam(required = false) Long themeId
+            @RequestParam(required = false) Long themeId,
+            @LoginMember Member member
     ) {
         return new ApiResponse<>(reservationTimeService.read(date, themeId));
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<ReservationTimeResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationTimeUpdateRequest newReservationTimeReq) {
+    public ApiResponse<ReservationTimeResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationTimeUpdateRequest newReservationTimeReq, @LoginMember Member member) {
         return new ApiResponse<>(reservationTimeService.update(id, newReservationTimeReq));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id, @LoginMember Member member) {
         reservationTimeService.delete(id);
         return new ApiResponse<>(null);
     }

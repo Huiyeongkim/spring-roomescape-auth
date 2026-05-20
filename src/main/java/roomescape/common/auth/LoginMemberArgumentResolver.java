@@ -1,8 +1,8 @@
 package roomescape.common.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -11,13 +11,14 @@ import roomescape.common.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberQueryingDao;
 
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String LOGIN_MEMBER_ID = "loginMemberId";
-
+    private final JwtProvider jwtProvider;
     private final MemberQueryingDao memberQueryingDao;
 
-    public LoginMemberArgumentResolver(MemberQueryingDao memberQueryingDao) {
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberQueryingDao memberQueryingDao) {
+        this.jwtProvider = jwtProvider;
         this.memberQueryingDao = memberQueryingDao;
     }
 
@@ -32,18 +33,16 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        HttpSession session = request.getSession(false);
-
-        if (session == null) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UnauthorizedException();
         }
 
-        Long memberId = (Long) session.getAttribute(LOGIN_MEMBER_ID);
-
-        if (memberId == null) {
+        String token = authHeader.substring(7);
+        if (!jwtProvider.isValid(token)) {
             throw new UnauthorizedException();
         }
-
+        Long memberId = jwtProvider.getMemberId(token);
         return memberQueryingDao.findById(memberId)
                 .orElseThrow(UnauthorizedException::new);
     }

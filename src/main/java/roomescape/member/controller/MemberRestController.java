@@ -1,20 +1,16 @@
 package roomescape.member.controller;
 
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.dto.ApiResponse;
-import roomescape.member.domain.Member;
-import roomescape.member.dto.LoginRequest;
-import roomescape.member.dto.MemberCreateRequest;
-import roomescape.member.dto.MemberResponse;
+import roomescape.member.dto.*;
 import roomescape.member.service.MemberService;
 
 @RestController
 public class MemberRestController {
 
-    private static final String LOGIN_MEMBER_ID = "loginMemberId";
     private final MemberService memberService;
 
     public MemberRestController(MemberService memberService) {
@@ -28,9 +24,21 @@ public class MemberRestController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<Void> login(@RequestBody LoginRequest request, HttpSession session) {
-        Member member = memberService.login(request);
-        session.setAttribute(LOGIN_MEMBER_ID, member.getId());
+    public ApiResponse<TokenResponse> login(@RequestBody LoginRequest request) {
+        TokenResponse token = memberService.login(request);
+        return new ApiResponse<>(token);
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@RequestBody RefreshRequest request) {
+        memberService.logout(request.getRefreshToken());
+        return new ApiResponse<>(null);
+    }
+
+    @PostMapping("/token/refresh")
+    public ApiResponse<String> refresh(@RequestBody RefreshRequest request, HttpServletResponse response) {
+        String newAccessToken = memberService.refresh(request.getRefreshToken());
+        response.setHeader("Authorization", "Bearer " + newAccessToken);
         return new ApiResponse<>(null);
     }
 }

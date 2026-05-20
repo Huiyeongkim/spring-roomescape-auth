@@ -125,7 +125,7 @@ public class ReservationQueryingDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public List<Reservation> findMyReservations(String name) {
+    public List<Reservation> findMyReservations(Long memberId) {
         String sql = """
                  select r.id as reservation_id, 
                        r.date as reservation_date, 
@@ -150,10 +150,11 @@ public class ReservationQueryingDao {
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
                 inner join member as m on m.id = r.member_id
-                where m.name = :name
+                where m.id = :member_id
                 """;
+
         SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", name);
+                .addValue("member_id", memberId);
         return jdbcTemplate.query(sql, param, reservationRowMapper);
     }
 

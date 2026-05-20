@@ -24,7 +24,7 @@ public class MemberQueryingDao {
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> {
         Member member = new Member(
                 resultSet.getLong("id"),
-                resultSet.getString("loginId"),
+                resultSet.getString("login_id"),
                 resultSet.getString("password"),
                 resultSet.getString("name"),
                 MemberRole.valueOf(resultSet.getString("role"))
@@ -34,7 +34,7 @@ public class MemberQueryingDao {
 
     public Optional<Member> findById(Long savedMemberId) {
         String sql = """
-                SELECT id, name, role FROM member
+                SELECT id, login_id, password, name, role FROM member
                 WHERE id = :id;
                 """;
 
@@ -51,7 +51,7 @@ public class MemberQueryingDao {
 
     public Optional<Member> findByLoginId(String loginId) {
         String sql = """
-                SELECT id, login_id, password name, role FROM member
+                SELECT id, login_id, password, name, role FROM member
                 WHERE login_id = :login_id;
                 """;
 

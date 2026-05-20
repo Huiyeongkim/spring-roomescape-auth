@@ -38,7 +38,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationCreateRequest reservationReq) {
+    public ReservationResponse create(ReservationCreateRequest reservationReq, Long memberId) {
         ReservationTime findReservationTime = findReservationTimeOrThrow(reservationReq.getTimeId());
         Theme findTheme = findThemeOrThrow(reservationReq.getThemeId());
 
@@ -48,7 +48,7 @@ public class ReservationService {
 
         Long generatedId;
         try {
-            generatedId = reservationUpdatingDao.save(reservationReq, 1L /*추후*/);
+            generatedId = reservationUpdatingDao.save(reservationReq, memberId);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }
@@ -57,7 +57,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND)));
     }
 
-    public ReservationResponse read(Long id) {
+    public ReservationResponse read(Long id, Long memberId) {
         Reservation reservationById = reservationQueryingDao.findReservationById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         return ReservationResponse.from(reservationById);
@@ -70,15 +70,15 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> readMyReservations(String name) {
-        List<Reservation> reservations = reservationQueryingDao.findMyReservations(name);
+    public List<ReservationResponse> readMyReservations(Long memberId) {
+        List<Reservation> reservations = reservationQueryingDao.findMyReservations(memberId);
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq) {
+    public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq, Long memberId) {
         if (!reservationQueryingDao.existsById(id)) {
             throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
@@ -101,7 +101,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, Long memberId) {
         Reservation findReservation = reservationQueryingDao.findReservationById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         ReservationTime reservationTime = findReservation.getTime();

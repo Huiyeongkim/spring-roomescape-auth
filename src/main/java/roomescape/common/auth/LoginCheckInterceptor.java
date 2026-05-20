@@ -2,22 +2,29 @@ package roomescape.common.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+@Component
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
-    private static final String LOGIN_MEMBER_ID = "loginMemberId";
+    private final JwtProvider jwtProvider;
+
+    public LoginCheckInterceptor(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute(LOGIN_MEMBER_ID) == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            if (jwtProvider.isValid(token)) {
+                return true;
+            }
         }
 
-        return true;
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return false;
     }
 }

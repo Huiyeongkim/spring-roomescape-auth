@@ -55,3 +55,14 @@ CREATE TABLE refresh_token
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
+
+CREATE TABLE store
+(
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id  BIGINT       NOT NULL,
+    name       VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP    NOT NULL DEFAULT current_timestamp,
+    updated_at TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
+);

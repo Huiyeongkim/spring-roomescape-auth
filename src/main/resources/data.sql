@@ -30,20 +30,23 @@ INSERT INTO member(login_id, password, name, role)
 VALUES ('id3', 'pass3', '검프', 'USER');
 
 
-INSERT INTO reservation (date, member_id, theme_id, time_id)
-VALUES ( '2026-05-01',1, 1, 1);
+INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1);
 
-INSERT INTO reservation (date, member_id, theme_id, time_id)
-VALUES ('2026-05-01', 2, 2, 3);
 
-INSERT INTO reservation (date, member_id, theme_id, time_id)
-VALUES ('2026-05-04', 3,3, 2);
+INSERT INTO reservation (date, member_id, theme_id, time_id, store_id)
+VALUES ('2026-05-01', 1, 1, 1, 1);
 
-INSERT INTO reservation (date, member_id, theme_id, time_id)
-VALUES ('2026-05-03', 1, 5, 2);
+INSERT INTO reservation (date, member_id, theme_id, time_id, store_id)
+VALUES ('2026-05-01', 2, 2, 3, 1);
 
-INSERT INTO reservation (date, member_id, theme_id, time_id)
-VALUES ('2026-05-05', 2, 3, 4);
+INSERT INTO reservation (date, member_id, theme_id, time_id, store_id)
+VALUES ('2026-05-04', 3, 3, 2, 1);
 
-INSERT INTO reservation (date, member_id, theme_id, time_id)
-VALUES ('2026-05-04', 3, 5, 1);
+INSERT INTO reservation (date, member_id, theme_id, time_id, store_id)
+VALUES ('2026-05-03', 1, 5, 2, 1);
+
+INSERT INTO reservation (date, member_id, theme_id, time_id, store_id)
+VALUES ('2026-05-05', 2, 3, 4, 1);
+
+INSERT INTO reservation (date, member_id, theme_id, time_id, store_id)
+VALUES ('2026-05-04', 3, 5, 1, 1);

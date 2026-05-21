@@ -137,7 +137,8 @@ class ThemeIntegrationTest {
     void 테마_삭제_실패_예약이_있는_테마() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('무서운 이야기', '공포', 'http://example.com')");
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
+        jdbcTemplate.update("INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES ('2026-08-04', 1, 1, 1, 1)");
 
         RestAssured.given().log().all()
                 .header("Authorization", "Bearer " + accessToken)

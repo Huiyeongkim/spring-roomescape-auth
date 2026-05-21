@@ -92,10 +92,13 @@ class MissionStep3Test {
                 .then().log().all()
                 .statusCode(200);
 
+        jdbcTemplate.update("INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1)");
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2026-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -116,6 +119,7 @@ class MissionStep3Test {
         updatedReservation.put("date", "2026-08-06");
         updatedReservation.put("timeId", 1);
         updatedReservation.put("themeId", 1);
+        updatedReservation.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

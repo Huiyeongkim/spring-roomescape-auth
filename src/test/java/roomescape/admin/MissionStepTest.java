@@ -54,11 +54,13 @@ class MissionStepTest {
     void 예약_추가_및_삭제() {
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES (?, ?, ?)", "무서워", "akdk", "https://hello.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1)");
 
         Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

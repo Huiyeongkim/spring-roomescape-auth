@@ -30,6 +30,7 @@ class ReservationIntegrationTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('무서운 이야기', '공포', 'http://example.com')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1)");
 
         Map<String, String> loginParams = new HashMap<>();
         loginParams.put("loginId", "id1");
@@ -51,6 +52,7 @@ class ReservationIntegrationTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -77,8 +79,8 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("전체 예약 목록을 조회할 수 있다.")
     void 예약_전체_목록_조회() {
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-05', 1, 1, 2)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES ('2026-08-04', 1, 1, 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES ('2026-08-05', 1, 1, 2, 1)");
 
         RestAssured.given().log().all()
                 .header("Authorization", "Bearer " + accessToken)
@@ -91,12 +93,13 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("예약을 수정할 수 있다.")
     void 예약_수정_성공() {
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2026-08-04', 1, 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES ('2026-08-04', 1, 1, 1, 1)");
 
         Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-08-08");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -115,6 +118,7 @@ class ReservationIntegrationTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -159,6 +163,7 @@ class ReservationIntegrationTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -185,6 +190,7 @@ class ReservationIntegrationTest {
         params.put("date", "2020-01-01");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -203,6 +209,7 @@ class ReservationIntegrationTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 999);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -221,6 +228,7 @@ class ReservationIntegrationTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 1);
         params.put("themeId", 999);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

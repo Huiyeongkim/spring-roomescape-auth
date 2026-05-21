@@ -3,6 +3,7 @@ package roomescape.reservation.dto;
 import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
+import roomescape.store.dto.StoreResponse;
 import roomescape.theme.dto.ThemeResponse;
 
 import java.time.LocalDate;
@@ -16,16 +17,18 @@ public class ReservationResponse {
     private final MemberResponse member;
     private final ReservationTimeResponse time;
     private final ThemeResponse theme;
+    private final StoreResponse store;
 
     private final LocalDateTime createdAt;
 
-    private ReservationResponse(Long id, LocalDate date, MemberResponse member, ReservationTimeResponse time, ThemeResponse theme, LocalDateTime createdAt) {
+    private ReservationResponse(Long id, LocalDate date, MemberResponse member, ReservationTimeResponse time, ThemeResponse theme, StoreResponse store, LocalDateTime createdAt) {
         this.id = id;
         this.date = date;
 
         this.member = member;
         this.time = time;
         this.theme = theme;
+        this.store = store;
         this.createdAt = createdAt;
     }
 
@@ -33,7 +36,9 @@ public class ReservationResponse {
         MemberResponse memberResponse = MemberResponse.from(reservation.getMember());
         ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(reservation.getTime());
         ThemeResponse themeResponse = ThemeResponse.from(reservation.getTheme());
-        return new ReservationResponse(reservation.getId(), reservation.getDate(), memberResponse, reservationTimeResponse, themeResponse, reservation.getCreatedAt());
+        StoreResponse storeResponse = StoreResponse.from(reservation.getStore());
+
+        return new ReservationResponse(reservation.getId(), reservation.getDate(), memberResponse, reservationTimeResponse, themeResponse, storeResponse, reservation.getCreatedAt());
     }
 
     public Long getId() {
@@ -54,6 +59,10 @@ public class ReservationResponse {
 
     public ThemeResponse getTheme() {
         return theme;
+    }
+
+    public StoreResponse getStore() {
+        return store;
     }
 
     public LocalDateTime getCreatedAt() {

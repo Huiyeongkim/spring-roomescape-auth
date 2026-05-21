@@ -30,22 +30,6 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
-(
-    id         BIGINT    NOT NULL AUTO_INCREMENT,
-    date       DATE      NOT NULL,
-    member_id  BIGINT    NOT NULL,
-    time_id    BIGINT    NOT NULL,
-    theme_id   BIGINT    NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-    updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
-    PRIMARY KEY (id),
-    FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id),
-    CONSTRAINT uk_reservation_theme_date_time UNIQUE (date, theme_id, time_id)
-);
-
 CREATE TABLE refresh_token
 (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
@@ -65,4 +49,22 @@ CREATE TABLE store
     updated_at TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id)
+);
+
+CREATE TABLE reservation
+(
+    id         BIGINT    NOT NULL AUTO_INCREMENT,
+    date       DATE      NOT NULL,
+    member_id  BIGINT    NOT NULL,
+    time_id    BIGINT    NOT NULL,
+    theme_id   BIGINT    NOT NULL,
+    store_id   BIGINT    NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (store_id) REFERENCES store (id),
+    CONSTRAINT uk_reservation_theme_date_time_store UNIQUE (date, theme_id, time_id, store_id)
 );

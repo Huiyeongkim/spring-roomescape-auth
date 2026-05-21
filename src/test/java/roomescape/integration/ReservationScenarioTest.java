@@ -29,6 +29,7 @@ class ReservationScenarioTest {
         jdbcTemplate.update("INSERT INTO member (login_id, password, name, role) VALUES ('id1', 'pass1', '브라운', 'USER')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('무서운 이야기', '공포', 'http://example.com')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
+        jdbcTemplate.update("INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1)");
 
         Map<String, String> loginParams = new HashMap<>();
         loginParams.put("loginId", "id1");
@@ -50,6 +51,7 @@ class ReservationScenarioTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -74,6 +76,7 @@ class ReservationScenarioTest {
         params.put("date", "2026-08-04");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -106,6 +109,7 @@ class ReservationScenarioTest {
         params.put("date", "2028-06-04");
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("storeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -10,6 +10,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.store.domain.Store;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
@@ -36,6 +37,12 @@ public class ReservationQueryingDao {
                 MemberRole.valueOf(resultSet.getString("member_role"))
         );
 
+        Store store = new Store(
+                resultSet.getLong("store_id"),
+                resultSet.getString("store_name"),
+                member
+        );
+
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
                 resultSet.getObject("start_at", LocalTime.class)
@@ -54,6 +61,7 @@ public class ReservationQueryingDao {
                 member,
                 reservationTime,
                 theme,
+                store,
                 resultSet.getObject("reservation_created_at", LocalDateTime.class),
                 resultSet.getObject("reservation_updated_at", LocalDateTime.class)
         );
@@ -66,24 +74,28 @@ public class ReservationQueryingDao {
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
-                       
+                
                        t.start_at, 
-                       
+                
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
                        th.url as theme_url,
-                       
+                
                        m.id as member_id,
                        m.login_id as member_login_id,
                        m.password as member_password,
                        m.name as member_name,
-                       m.role as member_role
-
+                       m.role as member_role,
+                       
+                       s.id as store_id,
+                       s.name as store_name                
+                
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
                 inner join member as m on m.id = r.member_id
+                inner join store as s on s.id = r.store_id
                 where r.id = :id
                 """;
         try {
@@ -98,29 +110,33 @@ public class ReservationQueryingDao {
 
     public List<Reservation> findAllReservations() {
         String sql = """
-                select r.id as reservation_id, 
+               select r.id as reservation_id, 
                        r.date as reservation_date, 
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
-                       
+                
                        t.start_at, 
-                       
+                
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
                        th.url as theme_url,
-                       
+                
                        m.id as member_id,
                        m.login_id as member_login_id,
                        m.password as member_password,
                        m.name as member_name,
-                       m.role as member_role
-                                       
+                       m.role as member_role,
+                       
+                       s.id as store_id,
+                       s.name as store_name                
+                
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
                 inner join member as m on m.id = r.member_id
+                inner join store as s on s.id = r.store_id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
@@ -132,24 +148,28 @@ public class ReservationQueryingDao {
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
-                       
+                
                        t.start_at, 
-                       
+                
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
                        th.url as theme_url,
-                       
+                
                        m.id as member_id,
                        m.login_id as member_login_id,
                        m.password as member_password,
                        m.name as member_name,
-                       m.role as member_role
-                                       
+                       m.role as member_role,
+                       
+                       s.id as store_id,
+                       s.name as store_name                
+                
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
                 inner join member as m on m.id = r.member_id
+                inner join store as s on s.id = r.store_id
                 where m.id = :member_id
                 """;
 
@@ -158,38 +178,43 @@ public class ReservationQueryingDao {
         return jdbcTemplate.query(sql, param, reservationRowMapper);
     }
 
-    public Optional<Reservation> findReservationByThemeAndDateAndTime(Long themeId, LocalDate date, Long timeId) {
+    public Optional<Reservation> findReservationByThemeAndDateAndTimeAndStore(Long themeId, LocalDate date, Long timeId, Long storeId) {
         String sql = """
-                     select r.id as reservation_id, 
+                select r.id as reservation_id, 
                        r.date as reservation_date, 
                        r.time_id, 
                        r.created_at as reservation_created_at, 
                        r.updated_at as reservation_updated_at,
-                       
+                
                        t.start_at, 
-                       
+                
                        th.id as theme_id, 
                        th.name as theme_name, 
                        th.description as theme_description, 
                        th.url as theme_url,
-                       
+                
                        m.id as member_id,
                        m.login_id as member_login_id,
                        m.password as member_password,
                        m.name as member_name,
-                       m.role as member_role
-                                       
+                       m.role as member_role,
+                       
+                       s.id as store_id,
+                       s.name as store_name                
+                
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
                 inner join member as m on m.id = r.member_id
-                where r.theme_id = :theme_id and r.date = :date and r.time_id = :time_id
+                inner join store as s on s.id = r.store_id
+                where r.theme_id = :theme_id and r.date = :date and r.time_id = :time_id and r.store_id = :store_id
                 """;
         try {
             SqlParameterSource param = new MapSqlParameterSource()
                     .addValue("theme_id", themeId)
                     .addValue("date", date)
-                    .addValue("time_id", timeId);
+                    .addValue("time_id", timeId)
+                    .addValue("store_id", storeId);
             Reservation reservation = jdbcTemplate.queryForObject(sql, param, reservationRowMapper);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException ex) {

@@ -34,6 +34,7 @@ class PopularThemeIntegrationTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('명탐정의 부재', '사라진 명탐정', 'https://example.com/3')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('우주정거장', '산소가 고갈', 'https://example.com/4')");
         jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES ('꿈속의 과자집', '꿈속에서 길을 잃은', 'https://example.com/5')");
+        jdbcTemplate.update("INSERT INTO store (name, member_id) VALUES ('브라운 매장', 1)");
     }
 
     @Test
@@ -41,12 +42,12 @@ class PopularThemeIntegrationTest {
     void 인기_테마_조회_예약_수_내림차순() {
         LocalDate now = LocalDate.now();
 
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 1, 1)", now.minusDays(9));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 3)", now.minusDays(10));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 2)", now.minusDays(11));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(6));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 4)", now.minusDays(5));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 1)", now.minusDays(4));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 1, 1, 1)", now.minusDays(9));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 2, 3, 1)", now.minusDays(10));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 2, 2, 1)", now.minusDays(11));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 3, 2, 1)", now.minusDays(6));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 5, 4, 1)", now.minusDays(5));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 5, 1, 1)", now.minusDays(4));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -61,12 +62,12 @@ class PopularThemeIntegrationTest {
     void 인기_테마_조회_예약_수_동일시_id_오름차순() {
         LocalDate now = LocalDate.now();
 
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 1, 1)", now.minusDays(9));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 3)", now.minusDays(10));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(3));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(6));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 4)", now.minusDays(5));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 1)", now.minusDays(4));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 1, 1, 1)", now.minusDays(9));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 2, 3, 1)", now.minusDays(10));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 3, 2, 1)", now.minusDays(3));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 3, 2, 1)", now.minusDays(6));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 5, 4, 1)", now.minusDays(5));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 5, 1, 1)", now.minusDays(4));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -81,12 +82,12 @@ class PopularThemeIntegrationTest {
     void 인기_테마_조회_범위_밖_예약_제외() {
         LocalDate now = LocalDate.now();
 
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 1, 1)", now.minusDays(9));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 3)", now.minusDays(10));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 2, 2)", now.minusDays(11));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 3, 2)", now.minusDays(6));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 4)", now.minusDays(5));
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES (?, 1, 5, 1)", now.minusDays(4));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 1, 1, 1)", now.minusDays(9));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 2, 3, 1)", now.minusDays(10));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 2, 2, 1)", now.minusDays(11));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 3, 2, 1)", now.minusDays(6));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 5, 4, 1)", now.minusDays(5));
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id, store_id) VALUES (?, 1, 5, 1, 1)", now.minusDays(4));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
